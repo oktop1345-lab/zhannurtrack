@@ -1,0 +1,945 @@
+<title>Дневник учёбы</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: a calm white workspace page — big tight headline + line illustration, modular bordered blocks, lots of air. */
+:root{
+  --bg:#ffffff; --soft:#f7f7f5; --soft-2:#efefec; --fg:#191918; --muted:#73726e; --faint:#a8a7a2;
+  --line:#e9e9e6; --blue:#2383e2; --blue-soft:#e7f1fb; --on-blue:#ffffff; --ink:#191918; --on-ink:#ffffff;
+  --danger:#d44c47; --shadow:0 1px 2px rgba(15,15,15,.04),0 8px 24px rgba(15,15,15,.06);
+  --f-display:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#191919; --soft:#202020; --soft-2:#2a2a2a; --fg:#ebebea; --muted:#9b9a97; --faint:#6e6d6a;
+    --line:#2f2f2f; --blue:#3b91e8; --blue-soft:#1d2b3a; --on-blue:#ffffff; --ink:#ebebea; --on-ink:#191919;
+    --danger:#ff6f68; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#191919; --soft:#202020; --soft-2:#2a2a2a; --fg:#ebebea; --muted:#9b9a97; --faint:#6e6d6a;
+  --line:#2f2f2f; --blue:#3b91e8; --blue-soft:#1d2b3a; --on-blue:#ffffff; --ink:#ebebea; --on-ink:#191919;
+  --danger:#ff6f68; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-display);-webkit-font-smoothing:antialiased;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+/* nav */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:22px;height:58px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap}
+.brand-mark{width:28px;height:28px;border:2px solid var(--fg);border-radius:7px;display:grid;place-items:center;font:700 14px/1 var(--f-mono)}
+.nav-links{display:flex;gap:4px}
+.nav-links button{background:none;border:none;color:var(--muted);font-size:14px;font-weight:500;padding:6px 10px;border-radius:6px}
+.nav-links button:hover{background:var(--soft);color:var(--fg)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.sync{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);white-space:nowrap}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.sync.ok i{background:#2fa66a}.sync.warn i{background:#e0a030}
+@media (max-width:760px){.nav-links{display:none}.sync span{display:none}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;border:1px solid transparent;transition:filter .15s,transform .08s,background .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-blue{background:var(--blue);color:var(--on-blue)}
+.btn-blue:hover{filter:brightness(1.07)}
+.btn-ink{background:var(--ink);color:var(--on-ink)}
+.btn-ink:hover{filter:brightness(1.15)}
+.btn-ghost{background:var(--bg);border-color:var(--line);color:var(--fg)}
+.btn-ghost:hover{background:var(--soft)}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.icon-btn{background:none;border:none;color:var(--faint);width:30px;height:30px;border-radius:6px;display:inline-grid;place-items:center;font-size:16px}
+.icon-btn:hover{background:var(--soft-2);color:var(--fg)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding-block:56px 36px}
+.hero h1{font-size:clamp(38px,5.6vw,60px);line-height:1.04;letter-spacing:-.04em;font-weight:800;margin:0 0 18px;text-wrap:balance}
+.hero p.lead{font-size:18px;color:var(--fg);max-width:30em;margin:0 0 26px;line-height:1.45}
+.hero .cta{display:flex;gap:10px;flex-wrap:wrap}
+.hero-art{width:100%;max-width:470px;justify-self:end}
+.hero-art svg{width:100%;height:auto;display:block}
+.float{animation:float 6s ease-in-out infinite}
+.float.d2{animation-delay:-2s}.float.d3{animation-delay:-4s}.float.d4{animation-delay:-1s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media (prefers-reduced-motion:reduce){.float{animation:none}}
+@media (max-width:820px){.hero{grid-template-columns:1fr;padding-block:32px 20px;gap:20px}.hero-art{justify-self:center;max-width:360px;order:-1}}
+
+.kpis-label{font-size:13px;color:var(--faint);margin:6px 0 10px}
+.kpis{display:flex;flex-wrap:wrap;gap:12px 40px;padding-bottom:40px;border-bottom:1px solid var(--line)}
+.kpi b{display:block;font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--muted)}
+
+/* sections */
+section.block{padding-block:44px 8px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.sec-head h2{font-size:28px;letter-spacing:-.03em;font-weight:700;margin:0;line-height:1.15}
+.sec-head p{margin:4px 0 0;color:var(--muted);font-size:14px}
+
+/* subjects row */
+.subjects{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px}
+.scard{border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;background:var(--bg);display:flex;flex-direction:column;gap:12px;min-width:0;transition:border-color .15s,box-shadow .15s}
+.scard:hover{box-shadow:var(--shadow)}
+.scard.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
+.scard h3{margin:0;font-size:15px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.glyph{width:40px;height:40px;border-radius:9px;display:grid;place-items:center;font:700 16px/1 var(--f-mono);background:color-mix(in srgb,var(--c) 14%,var(--bg));color:var(--c)}
+.scard .meta{font-size:13px;color:var(--muted)}
+.scard .go{margin-top:auto;background:none;border:none;padding:0;color:var(--blue);font-weight:500;font-size:13px;text-align:left}
+.scard .go:hover{text-decoration:underline}
+.scard.add{border-style:dashed;align-items:center;justify-content:center;color:var(--muted);min-height:150px;background:none;font-weight:500}
+.scard.add:hover{color:var(--fg);background:var(--soft)}
+
+/* timer */
+.timer{border:1px solid var(--line);border-radius:16px;padding:28px 24px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+@media (max-width:820px){.timer{grid-template-columns:1fr;padding:22px 16px}}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:7px;color:var(--muted)}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.pill.on{color:var(--fg);border-color:var(--fg)}
+.seg{display:inline-flex;background:var(--soft);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:none;background:transparent;padding:5px 11px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted)}
+.seg button.on{background:var(--bg);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.clock{font:700 clamp(54px,9vw,84px)/1 var(--f-mono);letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin:6px 0 4px}
+.clock-sub{color:var(--muted);font-size:14px;display:flex;align-items:center;gap:8px}
+.clock-sub i{width:8px;height:8px;border-radius:50%}
+.progress{height:4px;background:var(--soft-2);border-radius:99px;overflow:hidden;margin:18px 0 20px}
+.progress i{display:block;height:100%;background:var(--blue);width:0;transition:width .5s linear}
+.tctrl{display:flex;gap:8px;flex-wrap:wrap}
+.tside{display:flex;flex-direction:column;gap:16px;min-width:0}
+.lbl{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px;display:block}
+textarea,input[type=text],input[type=number],input[type=date],select{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 11px;font-size:14px}
+textarea{resize:vertical;min-height:72px}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+.goal{background:var(--soft);border-radius:12px;padding:14px 16px}
+.goal-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin-bottom:8px}
+.goal-row b{color:var(--fg)}
+.bar{height:6px;background:var(--soft-2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--fg);border-radius:99px;transition:width .4s}
+
+/* charts */
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:12px;padding:20px;min-width:0;background:var(--bg)}
+.card h3{margin:0 0 4px;font-size:15px;font-weight:600}
+.card .ch{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.card .sub{font-size:13px;color:var(--muted)}
+#barChart{width:100%;height:240px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:8px;height:8px;border-radius:2px}
+.donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.donut-wrap svg{flex:none}
+.dlist{flex:1;min-width:160px;font-size:13px}
+.dlist div{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.dlist div:last-child{border:none}
+.dlist i{width:8px;height:8px;border-radius:50%;flex:none}
+.dlist b{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mood-row{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:10px;font-size:13px;padding:5px 0}
+.mood-row .bar i{background:var(--mc)}
+.mood-row b{text-align:right;font-variant-numeric:tabular-nums}
+.stars{color:#e6a23c;letter-spacing:1px;white-space:nowrap}
+.stars s{color:var(--soft-2);text-decoration:none}
+.big-num{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.rate-list div{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;gap:8px}
+.rate-list span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.heat-box{overflow-x:auto}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,12px);grid-auto-columns:12px;gap:3px}
+.heat i{border-radius:3px;background:var(--soft-2)}
+
+/* history */
+.hist-filters{display:flex;gap:8px;align-items:center}
+.hist-filters select{width:auto;padding:6px 10px;font-size:13px}
+.day{margin-bottom:22px}
+.day-h{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:600;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.day-h span:first-child::first-letter{text-transform:uppercase}
+.sess{display:grid;grid-template-columns:40px 1fr auto;gap:14px;padding:12px 4px;border-bottom:1px solid var(--line);align-items:start}
+.sess:last-child{border-bottom:none}
+.sess .glyph{width:36px;height:36px;font-size:13px;border-radius:8px}
+.sess .body{min-width:0}
+.sess .t{font-weight:600;font-size:14px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.sess .t small{font-weight:500;color:var(--muted);font-family:var(--f-mono);font-size:12px}
+.sess .n{font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:2px}
+.sess .c{font-size:13px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;margin-top:4px;padding-left:10px;border-left:2px solid var(--line)}
+.sess .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;align-items:center}
+.tag{background:var(--soft);border-radius:6px;padding:2px 8px;color:var(--muted)}
+.sess .acts{display:flex;gap:2px}
+.empty{color:var(--muted);text-align:center;padding:36px 16px;font-size:14px;border:1px dashed var(--line);border-radius:12px}
+footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;color:var(--faint);font-size:13px;align-items:center}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(15,15,15,.45);display:none;align-items:flex-end;justify-content:center;z-index:30;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
+.modal.open{display:flex}
+@media (min-width:600px){.modal{align-items:center}}
+.sheet{background:var(--bg);border-radius:14px;width:100%;max-width:520px;max-height:calc(100% - 8px);overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.sheet h3{margin:0 0 16px;font-size:20px;letter-spacing:-.02em;display:flex;justify-content:space-between;align-items:center}
+.f{margin-bottom:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
+@media (max-width:420px){.row3{grid-template-columns:1fr 1fr}.row3>:first-child{grid-column:1/-1}}
+.moods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:420px){.moods{grid-template-columns:repeat(2,1fr)}}
+.moods button{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;font-weight:500;color:var(--muted)}
+.moods button span{font-size:22px;line-height:1.2}
+.moods button.on{border-color:var(--fg);color:var(--fg);background:var(--soft)}
+.rating{display:flex;gap:6px;align-items:center}
+.rating button{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-weight:700;font-size:15px;color:var(--muted)}
+.rating button.on{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.rating small{color:var(--muted);margin-left:6px;font-size:13px}
+.sheet .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.sub-item{display:grid;grid-template-columns:36px 64px 1fr 30px;gap:8px;align-items:center;margin-bottom:8px}
+.sub-item input[type=color]{width:36px;height:36px;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--bg)}
+.sub-item input[type=text]{padding:7px 9px}
+.palette{display:flex;gap:8px;flex-wrap:wrap}
+.palette button{width:26px;height:26px;border-radius:50%;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
+.palette button.on{box-shadow:0 0 0 2px var(--fg)}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:40;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--on-ink);font-size:12px;padding:8px 10px;border-radius:8px;z-index:20;opacity:0;transition:opacity .1s;max-width:240px}
+.tip div{display:flex;gap:6px;align-items:center}
+.tip i{width:8px;height:8px;border-radius:2px;display:inline-block}
+</style>
+
+<nav class="top"><div class="wrap">
+  <div class="brand"><span class="brand-mark">∂</span>Дневник учёбы</div>
+  <div class="nav-links">
+    <button data-go="subjectsSec">Предметы</button>
+    <button data-go="timerSec">Таймер</button>
+    <button data-go="statsSec">Статистика</button>
+    <button data-go="historySec">История</button>
+  </div>
+  <div class="nav-right">
+    <span class="sync" id="sync"><i></i><span>Подключение…</span></span>
+    <button class="icon-btn" id="themeBtn" title="Сменить тему" aria-label="Сменить тему">◐</button>
+    <button class="btn btn-ink btn-sm" id="navAdd">+ Занятие</button>
+  </div>
+</div></nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div>
+      <h1>Учись, отмечай, смотри как растёшь.</h1>
+      <p class="lead">Таймер, заметки о том, что прошёл, настроение и оценка каждой сессии. Всё синхронизируется между телефоном и компьютером.</p>
+      <div class="cta">
+        <button class="btn btn-blue" id="heroStart">Начать сессию</button>
+        <button class="btn btn-ghost" id="heroManual">Добавить вручную</button>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 480 330" fill="none" stroke="var(--fg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- floating tiles -->
+        <g class="float"><rect x="60" y="34" width="54" height="54" rx="10" fill="var(--bg)" transform="rotate(-10 87 61)"/><text x="87" y="69" font-family="JetBrains Mono,monospace" font-size="24" font-weight="700" fill="var(--fg)" stroke="none" text-anchor="middle" transform="rotate(-10 87 61)">Γ</text></g>
+        <g class="float d2"><rect x="196" y="12" width="56" height="56" rx="10" fill="var(--bg)"/><text x="224" y="49" font-family="Inter,sans-serif" font-size="22" font-weight="700" fill="var(--fg)" stroke="none" text-anchor="middle">Aa</text></g>
+        <g class="float d3"><rect x="322" y="40" width="54" height="54" rx="10" fill="var(--bg)" transform="rotate(12 349 67)"/><text x="349" y="76" font-family="JetBrains Mono,monospace" font-size="24" font-weight="700" fill="var(--fg)" stroke="none" text-anchor="middle" transform="rotate(12 349 67)">λ</text></g>
+        <g class="float d4"><rect x="404" y="120" width="50" height="50" rx="10" fill="var(--bg)" transform="rotate(-8 429 145)"/><text x="429" y="154" font-family="JetBrains Mono,monospace" font-size="22" font-weight="700" fill="var(--fg)" stroke="none" text-anchor="middle" transform="rotate(-8 429 145)">∮</text></g>
+        <!-- desk -->
+        <path d="M24 288 H456"/>
+        <path d="M70 288 V318 M410 288 V318"/>
+        <!-- laptop -->
+        <path d="M150 284 L170 196 H290 L270 284 Z" fill="var(--bg)"/>
+        <circle cx="222" cy="240" r="6"/>
+        <path d="M120 286 H300"/>
+        <!-- book stack -->
+        <rect x="318" y="262" width="104" height="22" rx="3" fill="var(--bg)"/>
+        <rect x="328" y="240" width="88" height="22" rx="3" fill="var(--bg)"/>
+        <path d="M338 251 H372 M330 273 H360"/>
+        <!-- mug -->
+        <path d="M58 236 H100 V276 Q100 284 92 284 H66 Q58 284 58 276 Z" fill="var(--bg)"/>
+        <path d="M100 246 Q116 246 116 258 Q116 270 100 270"/>
+        <path class="float" d="M72 222 Q66 212 74 204 M86 222 Q80 212 88 204"/>
+        <!-- pencil -->
+        <path d="M300 214 L352 166 L362 176 L310 224 L296 228 Z" fill="var(--bg)"/>
+        <path d="M346 172 L356 182"/>
+        <!-- sparkles -->
+        <path d="M150 120 v14 M143 127 h14 M300 140 v10 M295 145 h10" stroke-width="2"/>
+        <!-- formula scribble -->
+        <path d="M120 160 q10 -14 20 0 t20 0 t20 0" stroke-width="1.8"/>
+      </svg>
+    </div>
+  </header>
+
+  <div class="kpis-label">Твой прогресс</div>
+  <div class="kpis">
+    <div class="kpi"><b id="kToday">0м</b><span>сегодня</span></div>
+    <div class="kpi"><b id="kWeek">0м</b><span>за 7 дней</span></div>
+    <div class="kpi"><b id="kStreak">0 дн.</b><span>серия подряд</span></div>
+    <div class="kpi"><b id="kRate">—</b><span>средняя оценка, 30 дней</span></div>
+    <div class="kpi"><b id="kTotal">0ч</b><span>всего</span></div>
+  </div>
+
+  <section class="block" id="subjectsSec">
+    <div class="sec-head">
+      <div><h2>Предметы</h2><p>Выбери, чем занимаешься, или добавь свой.</p></div>
+      <button class="btn btn-ghost btn-sm" id="manageBtn">Настроить предметы</button>
+    </div>
+    <div class="subjects" id="subjects"></div>
+  </section>
+
+  <section class="block" id="timerSec">
+    <div class="sec-head"><div><h2>Таймер</h2><p>Идёт даже если закрыть вкладку, и виден на всех твоих устройствах.</p></div></div>
+    <div class="timer">
+      <div>
+        <div class="seg" id="modes">
+          <button data-mode="stopwatch">Секундомер</button>
+          <button data-mode="25">Помодоро 25</button>
+          <button data-mode="50">Фокус 50</button>
+        </div>
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="clock-sub"><i id="clockDot"></i><span id="clockSubj">—</span></div>
+        <div class="progress"><i id="prog"></i></div>
+        <div class="tctrl">
+          <button class="btn btn-blue" id="startBtn">Старт</button>
+          <button class="btn btn-ink" id="finishBtn" disabled>Завершить</button>
+          <button class="btn btn-ghost" id="resetBtn" disabled>Сбросить</button>
+        </div>
+      </div>
+      <div class="tside">
+        <div><span class="lbl">Предмет</span><div class="pills" id="pills"></div></div>
+        <div><span class="lbl">Что учишь сейчас</span><textarea id="draftNote" placeholder="Например: символы Кристоффеля, задачи 3–7"></textarea></div>
+        <div class="goal">
+          <div class="goal-row"><span>Цель на день: <b id="goalVal"></b></span><button class="icon-btn" id="goalBtn" title="Изменить цель" aria-label="Изменить цель">✎</button></div>
+          <div class="bar"><i id="goalBar" style="width:0"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="statsSec">
+    <div class="sec-head"><div><h2>Статистика</h2><p>Сколько и чему ты учился.</p></div></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="ch"><div><h3>По дням</h3><div class="sub" id="barSub"></div></div>
+          <div class="seg" id="rangeSeg"><button data-r="7" class="on">7 дней</button><button data-r="14">14</button><button data-r="30">30</button></div></div>
+        <svg id="barChart" role="img" aria-label="Время учёбы по дням"></svg>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><h3>Распределение</h3>
+          <div class="seg" id="donutSeg"><button data-r="7" class="on">Неделя</button><button data-r="30">Месяц</button><button data-r="0">Всё</button></div></div>
+        <div class="donut-wrap"><svg id="donut" width="150" height="150" viewBox="0 0 150 150"></svg><div class="dlist" id="dlist"></div></div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="card"><h3>Настроение</h3><div class="sub" style="margin-bottom:12px">за 30 дней</div><div id="moodBox"></div></div>
+      <div class="card"><h3>Оценка сессий</h3><div class="sub" style="margin-bottom:12px">средняя за 30 дней</div><div id="rateBox"></div></div>
+      <div class="card"><h3>Активность</h3><div class="sub" style="margin-bottom:12px">последние 20 недель</div><div class="heat-box"><div class="heat" id="heat"></div></div></div>
+    </div>
+  </section>
+
+  <section class="block" id="historySec">
+    <div class="sec-head">
+      <div><h2>История</h2><p>Каждая сессия с заметкой, настроением и оценкой.</p></div>
+      <div class="hist-filters"><select id="histFilter" aria-label="Фильтр по предмету"></select></div>
+    </div>
+    <div id="history"></div>
+  </section>
+
+  <footer>
+    <button class="btn btn-ghost btn-sm" id="exportBtn">Экспорт данных</button>
+    <button class="btn btn-ghost btn-sm" id="importBtn">Импорт</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+  </footer>
+</main>
+
+<!-- session editor -->
+<div class="modal" id="sessModal" role="dialog" aria-modal="true" aria-labelledby="sessTitle">
+  <div class="sheet">
+    <h3><span id="sessTitle">Сессия</span><button class="icon-btn" data-close aria-label="Закрыть">✕</button></h3>
+    <div class="row3 f">
+      <div><label class="lbl" for="eSubj">Предмет</label><select id="eSubj"></select></div>
+      <div><label class="lbl" for="eH">Часы</label><input type="number" id="eH" min="0" max="23" inputmode="numeric"></div>
+      <div><label class="lbl" for="eM">Минуты</label><input type="number" id="eM" min="0" max="59" inputmode="numeric"></div>
+    </div>
+    <div class="f"><label class="lbl" for="eDate">Дата</label><input type="date" id="eDate"></div>
+    <div class="f"><label class="lbl" for="eNote">Что учил</label><textarea id="eNote" placeholder="Тема, глава, номера задач"></textarea></div>
+    <div class="f"><span class="lbl">Настроение</span><div class="moods" id="eMoods"></div></div>
+    <div class="f"><span class="lbl">Как прошла сессия</span><div class="rating" id="eRating"></div></div>
+    <div class="f"><label class="lbl" for="eComment">Комментарий</label><textarea id="eComment" placeholder="Что получилось, что было сложно, что повторить"></textarea></div>
+    <div class="acts"><button class="btn btn-ghost" data-close>Отмена</button><button class="btn btn-blue" id="eSave">Сохранить</button></div>
+  </div>
+</div>
+
+<!-- subjects manager -->
+<div class="modal" id="subModal" role="dialog" aria-modal="true" aria-labelledby="subTitle">
+  <div class="sheet">
+    <h3><span id="subTitle">Предметы</span><button class="icon-btn" data-close aria-label="Закрыть">✕</button></h3>
+    <div class="sub" style="font-size:12px;color:var(--muted);display:grid;grid-template-columns:36px 64px 1fr 30px;gap:8px;margin-bottom:6px"><span>Цвет</span><span>Значок</span><span>Название</span><span></span></div>
+    <div id="subList"></div>
+    <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px">
+      <span class="lbl">Новый предмет</span>
+      <div class="sub-item" style="grid-template-columns:64px 1fr auto">
+        <input type="text" id="newGlyph" maxlength="3" placeholder="∑" aria-label="Значок">
+        <input type="text" id="newSubj" placeholder="Например: Матанализ" aria-label="Название">
+        <button class="btn btn-blue btn-sm" id="addSubj">Добавить</button>
+      </div>
+      <div class="palette" id="palette"></div>
+    </div>
+  </div>
+</div>
+
+<!-- confirm / number dialog -->
+<div class="modal" id="askModal" role="dialog" aria-modal="true">
+  <div class="sheet" style="max-width:400px">
+    <h3 id="askTitle" style="font-size:17px"></h3>
+    <div id="askBody" style="color:var(--muted);font-size:14px"></div>
+    <input type="number" id="askInput" min="1" style="margin-top:12px" hidden>
+    <div class="acts"><button class="btn btn-ghost" id="askNo">Отмена</button><button class="btn btn-ink" id="askYes">OK</button></div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+'use strict';
+/* ---------- constants ---------- */
+const LKEY = 'study-diary-v2';
+const PALETTE = ['#9065b0','#448361','#d9730d','#337ea9','#c14c8a','#cb912f','#2a9d8f','#787774'];
+const MOODS = [
+  {id:'tired', label:'Усталый', e:'😮‍💨', c:'#9a8bd8'},
+  {id:'energetic', label:'Бодрый', e:'⚡', c:'#e2a33a'},
+  {id:'sad', label:'Грустный', e:'😔', c:'#5b93d6'},
+  {id:'angry', label:'Злой', e:'😠', c:'#de5b52'},
+];
+const RATE_WORDS = ['', 'плохо', 'так себе', 'нормально', 'хорошо', 'отлично'];
+const DEFAULT_SUBJECTS = [
+  {id:'tensor', name:'Тензорный анализ', color:'#9065b0', glyph:'Γ'},
+  {id:'english', name:'Английский', color:'#448361', glyph:'Aa'},
+  {id:'linalg', name:'Линейная алгебра', color:'#d9730d', glyph:'λ'},
+  {id:'em', name:'Электричество и магнетизм', color:'#337ea9', glyph:'∮'},
+];
+const DEFAULT_TIMER = {subjectId:'tensor', mode:'stopwatch', running:false, startedAt:0, acc:0};
+
+/* ---------- state ---------- */
+const S = {subjects: structuredClone(DEFAULT_SUBJECTS), goal: 120, timer: {...DEFAULT_TIMER}, sessions: []};
+let mode = 'local'; // 'local' | 'cloud'
+let settingsRef = null, sessColl = null;
+
+const lsGet = k => { try { return localStorage.getItem(k); } catch(e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} };
+(function loadLocal() {
+  try {
+    const d = JSON.parse(lsGet(LKEY) || 'null');
+    if (!d) return;
+    if (Array.isArray(d.subjects) && d.subjects.length) S.subjects = d.subjects;
+    if (Array.isArray(d.sessions)) S.sessions = d.sessions;
+    if (d.goal > 0) S.goal = d.goal;
+    if (d.timer) S.timer = {...DEFAULT_TIMER, ...d.timer};
+  } catch(e) {}
+})();
+const saveLocal = () => lsSet(LKEY, JSON.stringify(S));
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const dkey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = () => dkey(new Date());
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const newId = () => 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const subj = id => S.subjects.find(s => s.id === id) || {id, name:'Удалённый предмет', color:'#999999', glyph:'?'};
+const glyphOf = s => s.glyph || (s.name || '?').slice(0, 1).toUpperCase();
+const fmtMin = m => { if (m > 0 && m < 1) return '<1м'; m = Math.round(m); const h = Math.floor(m/60), r = m % 60; return h ? (r ? `${h}ч ${r}м` : `${h}ч`) : `${r}м`; };
+const minutesOn = (date, sid) => S.sessions.reduce((a, x) => a + (x.date === date && (!sid || x.subjectId === sid) ? x.dur/60 : 0), 0);
+const stars = r => r ? `<span class="stars" title="${r} из 5">${'★'.repeat(r)}<s>${'★'.repeat(5-r)}</s></span>` : '';
+const moodOf = id => MOODS.find(m => m.id === id);
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
+
+/* ---------- dialogs (native confirm/prompt are blocked in artifacts) ---------- */
+function ask(title, body, {okLabel = 'OK', danger = false, number = null} = {}) {
+  return new Promise(res => {
+    $('askTitle').textContent = title; $('askBody').textContent = body || '';
+    const inp = $('askInput'); inp.hidden = number === null; if (number !== null) inp.value = number;
+    const yes = $('askYes'); yes.textContent = okLabel; yes.style.background = danger ? 'var(--danger)' : ''; yes.style.color = danger ? '#fff' : '';
+    const m = $('askModal'); m.classList.add('open'); (number !== null ? inp : yes).focus();
+    const done = v => { m.classList.remove('open'); $('askYes').onclick = $('askNo').onclick = m.onclick = null; res(v); };
+    $('askYes').onclick = () => done(number !== null ? Number(inp.value) : true);
+    $('askNo').onclick = () => done(number !== null ? null : false);
+    m.onclick = e => { if (e.target === m) done(number !== null ? null : false); };
+  });
+}
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => {
+  if (e.target === m && m.id !== 'askModal') m.classList.remove('open');
+  if (e.target.closest('[data-close]')) m.classList.remove('open');
+}));
+addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.id !== 'askModal' && m.classList.remove('open')); });
+
+/* ---------- persistence ---------- */
+let writing = Promise.resolve(), queued = false;
+function saveSettings() {
+  saveLocal();
+  if (mode !== 'cloud' || queued) return;
+  queued = true;
+  writing = writing.then(() => {
+    queued = false;
+    return settingsRef.set({subjects: S.subjects, goal: S.goal, timer: S.timer, updatedAt: Date.now()});
+  }).catch(err => cloudError(err));
+}
+function sessionBody(x) { const {id, ...rest} = x; return rest; }
+async function putSession(x) {
+  saveLocal();
+  if (mode !== 'cloud') return;
+  try { await sessColl.doc(x.id).set(sessionBody(x)); } catch(err) { cloudError(err); }
+}
+async function dropSession(id) {
+  saveLocal();
+  if (mode !== 'cloud') return;
+  try { await sessColl.doc(id).delete(); } catch(err) { cloudError(err); }
+}
+function cloudError(err) {
+  const c = err && err.code;
+  if (c === 'quota_exceeded') toast('Хранилище заполнено. Удали старые записи или сделай экспорт.');
+  else if (c === 'revoked') setSync('local', 'Только на этом устройстве');
+  else toast('Не удалось сохранить в облако. Данные остались на этом устройстве.');
+}
+function setSync(state, text) {
+  const el = $('sync');
+  el.className = 'sync ' + (state === 'cloud' ? 'ok' : state === 'warn' ? 'warn' : '');
+  el.querySelector('span').textContent = text;
+  el.title = text;
+}
+
+async function connect() {
+  setSync('', 'Подключение…');
+  if (!window.claude || typeof window.claude.use !== 'function') { setSync('local', 'Только на этом устройстве'); return; }
+  let db, user;
+  try { [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]); } catch(e) {}
+  const uid = user ? await user.id() : null;
+  if (!db || !uid) { setSync('local', 'Войди в claude.ai для синхронизации'); return; }
+  settingsRef = db.doc(`data/users/${uid}/settings`);
+  sessColl = settingsRef.collection('sessions');
+  mode = 'cloud';
+  setSync('warn', 'Синхронизация…');
+  let gotSettings = false, gotSessions = false, seeded = false;
+  const timer = setTimeout(() => { if (!gotSettings || !gotSessions) setSync('warn', 'Нет связи, данные могут быть устаревшими'); }, 10000);
+  const settle = () => { if (gotSettings && gotSessions) { clearTimeout(timer); setSync('cloud', 'Синхронизировано'); } };
+
+  settingsRef.onSnapshot(snap => {
+    if (!snap.exists) {
+      if (!snap.metadata.fromCache && !seeded) {
+        seeded = true;
+        gotSettings = true; settle();
+        saveSettings(); // first visit with this account: store current subjects
+        // carry over sessions that were only on this device
+        S.sessions.forEach(x => putSession(x));
+      }
+      return;
+    }
+    const d = snap.data();
+    if (Array.isArray(d.subjects) && d.subjects.length) S.subjects = d.subjects.map(s => ({...s}));
+    if (d.goal > 0) S.goal = d.goal;
+    if (d.timer) S.timer = {...DEFAULT_TIMER, ...d.timer};
+    if (!snap.metadata.fromCache) { gotSettings = true; settle(); }
+    saveLocal(); renderAll();
+  }, err => { clearTimeout(timer); setSync('warn', 'Синхронизация прервалась'); });
+
+  sessColl.onSnapshot(q => {
+    S.sessions = q.docs.map(d => ({...d.data(), id: d.id}));
+    if (!q.metadata.fromCache) { gotSessions = true; settle(); }
+    saveLocal(); renderAll();
+  }, err => { clearTimeout(timer); setSync('warn', 'Синхронизация прервалась'); });
+}
+
+/* ---------- theme ---------- */
+const applyTheme = () => { const t = lsGet('study-theme'); if (t) document.documentElement.dataset.theme = t; };
+$('themeBtn').onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next; lsSet('study-theme', next); renderBars(); renderDonut();
+};
+applyTheme();
+
+/* ---------- navigation ---------- */
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => $(b.dataset.go).scrollIntoView({behavior:'smooth', block:'start'}));
+$('heroStart').onclick = () => { $('timerSec').scrollIntoView({behavior:'smooth'}); if (!S.timer.running) startTimer(); };
+$('heroManual').onclick = $('navAdd').onclick = () => openSession(null);
+
+/* ---------- subjects ---------- */
+function renderSubjects() {
+  const t = today();
+  const weekFrom = dkey(addDays(new Date(), -6));
+  $('subjects').innerHTML = S.subjects.map(s => {
+    const week = S.sessions.reduce((a, x) => a + (x.subjectId === s.id && x.date >= weekFrom ? x.dur/60 : 0), 0);
+    const last = S.sessions.filter(x => x.subjectId === s.id).sort((a, b) => b.start - a.start)[0];
+    return `<div class="scard ${S.timer.subjectId === s.id ? 'on' : ''}" style="--c:${esc(s.color)}">
+      <h3>${esc(s.name)}</h3>
+      <div class="glyph">${esc(glyphOf(s))}</div>
+      <div class="meta">Сегодня ${fmtMin(minutesOn(t, s.id))} · неделя ${fmtMin(week)}${last && last.note ? `<br>Последнее: ${esc(last.note.split('\n')[0].slice(0, 60))}` : ''}</div>
+      <button class="go" data-start="${esc(s.id)}">Начать сессию →</button>
+    </div>`;
+  }).join('') + `<button class="scard add" id="addCard">+ Добавить предмет</button>`;
+  $('subjects').querySelectorAll('[data-start]').forEach(b => b.onclick = () => {
+    if (!S.timer.running && S.timer.acc < 1) { S.timer.subjectId = b.dataset.start; startTimer(); }
+    else { selectSubject(b.dataset.start); }
+    $('timerSec').scrollIntoView({behavior:'smooth'});
+  });
+  $('addCard').onclick = openManage;
+
+  $('pills').innerHTML = S.subjects.map(s => `<button class="pill ${S.timer.subjectId === s.id ? 'on' : ''}" style="--c:${esc(s.color)}" data-id="${esc(s.id)}"><i></i>${esc(s.name)}</button>`).join('');
+  $('pills').querySelectorAll('button').forEach(b => b.onclick = () => selectSubject(b.dataset.id));
+
+  const opts = S.subjects.map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+  $('eSubj').innerHTML = opts;
+  const hf = $('histFilter'), cur = hf.value;
+  hf.innerHTML = '<option value="">Все предметы</option>' + opts;
+  hf.value = S.subjects.some(s => s.id === cur) ? cur : '';
+}
+function selectSubject(id) {
+  if (S.timer.subjectId === id) return;
+  S.timer.subjectId = id; saveSettings(); renderSubjects(); tick();
+}
+
+/* ---------- timer ---------- */
+const elapsed = () => S.timer.acc + (S.timer.running ? Math.max(0, Date.now() - S.timer.startedAt) / 1000 : 0);
+const target = () => S.timer.mode === 'stopwatch' ? 0 : Number(S.timer.mode) * 60;
+let wakeLock = null;
+async function keepAwake(on) {
+  try {
+    if (on && !wakeLock && navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen');
+    if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch(e) { wakeLock = null; }
+}
+function startTimer() {
+  if (!S.subjects.some(s => s.id === S.timer.subjectId)) S.timer.subjectId = S.subjects[0].id;
+  S.timer.running = true; S.timer.startedAt = Date.now(); saveSettings(); keepAwake(true); renderSubjects(); tick();
+}
+function pauseTimer() { S.timer.acc = elapsed(); S.timer.running = false; saveSettings(); keepAwake(false); tick(); }
+function tick() {
+  const e = elapsed(), tg = target();
+  const shown = tg ? Math.max(0, tg - e) : e;
+  const sec = Math.floor(shown);
+  const txt = `${pad(Math.floor(sec/3600))}:${pad(Math.floor(sec % 3600 / 60))}:${pad(sec % 60)}`;
+  $('clock').textContent = txt;
+  const s = subj(S.timer.subjectId);
+  $('clockSubj').textContent = S.timer.running ? `Идёт · ${s.name}` : (e >= 1 ? `Пауза · ${s.name}` : s.name);
+  $('clockDot').style.background = s.color;
+  $('prog').style.width = (tg ? Math.min(100, e / tg * 100) : (e % 3600) / 36) + '%';
+  $('prog').style.background = s.color;
+  $('startBtn').textContent = S.timer.running ? 'Пауза' : (e >= 1 ? 'Продолжить' : 'Старт');
+  $('finishBtn').disabled = e < 1;
+  $('resetBtn').disabled = e < 1;
+  document.title = S.timer.running ? `${txt} · ${s.name}` : 'Дневник учёбы';
+  [...$('modes').children].forEach(b => b.classList.toggle('on', b.dataset.mode === S.timer.mode));
+  if (tg && S.timer.running && e >= tg) { pauseTimer(); beep(); toast('Время вышло. Сохрани сессию или продолжай.'); }
+}
+function beep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, .28, .56].forEach(t => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(.14, ctx.currentTime + t); g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + t + .22);
+      o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + .24);
+    });
+  } catch(e) {}
+}
+$('startBtn').onclick = () => S.timer.running ? pauseTimer() : startTimer();
+$('finishBtn').onclick = () => { if (S.timer.running) pauseTimer(); openSession(null, true); };
+$('resetBtn').onclick = async () => {
+  if (!await ask('Сбросить таймер?', 'Время этой сессии не сохранится.', {okLabel:'Сбросить', danger:true})) return;
+  S.timer.running = false; S.timer.acc = 0; saveSettings(); keepAwake(false); tick();
+};
+$('modes').onclick = e => { const b = e.target.closest('button'); if (!b) return; S.timer.mode = b.dataset.mode; saveSettings(); tick(); };
+$('draftNote').value = lsGet('study-draft') || '';
+$('draftNote').oninput = e => lsSet('study-draft', e.target.value);
+
+/* ---------- session editor ---------- */
+let editing = null, fromTimer = false, eMood = null, eRate = 0;
+$('eMoods').innerHTML = MOODS.map(m => `<button type="button" data-m="${m.id}"><span>${m.e}</span>${m.label}</button>`).join('');
+$('eRating').innerHTML = [1,2,3,4,5].map(n => `<button type="button" data-r="${n}">${n}</button>`).join('') + '<small id="eRateWord"></small>';
+$('eMoods').onclick = e => { const b = e.target.closest('button'); if (!b) return; eMood = eMood === b.dataset.m ? null : b.dataset.m; paintPickers(); };
+$('eRating').onclick = e => { const b = e.target.closest('button'); if (!b) return; eRate = eRate === +b.dataset.r ? 0 : +b.dataset.r; paintPickers(); };
+function paintPickers() {
+  [...$('eMoods').children].forEach(b => b.classList.toggle('on', b.dataset.m === eMood));
+  [...$('eRating').querySelectorAll('button')].forEach(b => b.classList.toggle('on', +b.dataset.r <= eRate));
+  $('eRateWord').textContent = RATE_WORDS[eRate] || '';
+}
+function openSession(x, timerFinish = false) {
+  editing = x; fromTimer = timerFinish;
+  const dur = x ? x.dur : (timerFinish ? Math.round(elapsed()) : 1800);
+  const mins = Math.max(timerFinish ? 0 : 1, Math.round(dur / 60));
+  $('sessTitle').textContent = x ? 'Изменить сессию' : timerFinish ? 'Сессия завершена' : 'Новое занятие';
+  $('eSubj').value = x ? x.subjectId : S.timer.subjectId;
+  $('eH').value = Math.floor(mins / 60); $('eM').value = mins % 60;
+  $('eDate').value = x ? x.date : today();
+  $('eNote').value = x ? (x.note || '') : (timerFinish ? $('draftNote').value : '');
+  $('eComment').value = x ? (x.comment || '') : '';
+  eMood = x ? (x.mood || null) : null; eRate = x ? (x.rating || 0) : 0;
+  paintPickers();
+  $('eSave').textContent = timerFinish ? 'Сохранить сессию' : 'Сохранить';
+  $('sessModal').classList.add('open');
+  setTimeout(() => (timerFinish ? $('eNote') : $('eSubj')).focus(), 50);
+}
+$('eSave').onclick = () => {
+  let dur = ((Number($('eH').value) || 0) * 60 + (Number($('eM').value) || 0)) * 60;
+  if (fromTimer && !editing) {
+    const real = Math.round(elapsed());
+    if (Math.abs(real - dur) < 60) dur = real; // keep exact seconds unless edited
+  }
+  if (dur <= 0) { toast('Укажи длительность'); return; }
+  const date = $('eDate').value || today();
+  const base = editing ? {...editing} : {id: newId(), start: fromTimer ? Date.now() - dur * 1000 : new Date(date + 'T12:00').getTime()};
+  const x = {...base, subjectId: $('eSubj').value, date, dur, note: $('eNote').value.trim(), comment: $('eComment').value.trim(), mood: eMood, rating: eRate || null};
+  if (editing) S.sessions = S.sessions.map(y => y.id === x.id ? x : y); else S.sessions.push(x);
+  if (fromTimer && !editing) {
+    S.timer = {...S.timer, running:false, acc:0, startedAt:0};
+    $('draftNote').value = ''; lsSet('study-draft', '');
+    saveSettings(); keepAwake(false);
+  }
+  putSession(x);
+  $('sessModal').classList.remove('open');
+  renderAll();
+  toast(editing ? 'Изменения сохранены' : `Сохранено: ${fmtMin(dur/60)}, ${subj(x.subjectId).name}`);
+};
+
+/* ---------- KPIs ---------- */
+function renderKpis() {
+  const tm = minutesOn(today());
+  $('kToday').textContent = fmtMin(tm);
+  let w = 0; for (let i = 0; i < 7; i++) w += minutesOn(dkey(addDays(new Date(), -i)));
+  $('kWeek').textContent = fmtMin(w);
+  const days = new Set(S.sessions.map(x => x.date));
+  let streak = 0, d = new Date(); if (!days.has(dkey(d))) d = addDays(d, -1);
+  while (days.has(dkey(d))) { streak++; d = addDays(d, -1); }
+  $('kStreak').textContent = `${streak} дн.`;
+  const from = dkey(addDays(new Date(), -29));
+  const rated = S.sessions.filter(x => x.rating && x.date >= from);
+  $('kRate').textContent = rated.length ? (rated.reduce((a, x) => a + x.rating, 0) / rated.length).toFixed(1) + ' / 5' : '—';
+  $('kTotal').textContent = fmtMin(S.sessions.reduce((a, x) => a + x.dur/60, 0));
+  $('goalVal').textContent = `${fmtMin(tm)} из ${fmtMin(S.goal)}`;
+  $('goalBar').style.width = Math.min(100, tm / S.goal * 100) + '%';
+}
+$('goalBtn').onclick = async () => {
+  const v = await ask('Цель на день', 'Сколько минут в день хочешь заниматься?', {okLabel:'Сохранить', number:S.goal});
+  if (v && v > 0) { S.goal = Math.round(v); saveSettings(); renderKpis(); }
+};
+
+/* ---------- bar chart ---------- */
+let range = 7;
+$('rangeSeg').onclick = e => { const b = e.target.closest('button'); if (!b) return; range = +b.dataset.r; [...$('rangeSeg').children].forEach(x => x.classList.toggle('on', x === b)); renderBars(); };
+const niceMax = v => [30,60,90,120,180,240,300,360,480,600,720].find(s => s >= v) || Math.ceil(v/120)*120;
+function renderBars() {
+  const svg = $('barChart'); const W = Math.max(280, svg.clientWidth || 600), H = 240;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const pL = 38, pB = 24, pT = 8, pR = 4;
+  const days = Array.from({length: range}, (_, i) => addDays(new Date(), i - range + 1));
+  const data = days.map(d => { const k = dkey(d); return {d, k, parts: S.subjects.map(s => ({s, m: minutesOn(k, s.id)})).filter(p => p.m > 0)}; });
+  const totals = data.map(x => x.parts.reduce((a, p) => a + p.m, 0));
+  const max = niceMax(Math.max(30, ...totals));
+  const cw = (W - pL - pR) / range, bw = Math.min(30, cw * .6);
+  const y = m => pT + (H - pT - pB) * (1 - m / max);
+  let out = '';
+  for (let i = 0; i <= 4; i++) {
+    const m = max * i / 4, yy = y(m);
+    out += `<line x1="${pL}" x2="${W-pR}" y1="${yy}" y2="${yy}" stroke="var(--line)" ${i ? 'stroke-dasharray="2 4"' : ''}/>`;
+    out += `<text x="${pL-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="var(--faint)">${m >= 60 ? +(m/60).toFixed(1) + 'ч' : Math.round(m) + 'м'}</text>`;
+  }
+  data.forEach((x, i) => {
+    const cx = pL + cw*i + cw/2; let acc = 0;
+    x.parts.forEach((p, j) => {
+      const y1 = y(acc + p.m), y0 = y(acc); acc += p.m;
+      const h = Math.max(1.5, y0 - y1), r = j === x.parts.length - 1 ? Math.min(4, h) : 0;
+      out += `<path d="M${cx-bw/2},${y0} V${y1+r} Q${cx-bw/2},${y1} ${cx-bw/2+r},${y1} H${cx+bw/2-r} Q${cx+bw/2},${y1} ${cx+bw/2},${y1+r} V${y0} Z" fill="${esc(p.s.color)}"/>`;
+    });
+    const isT = x.k === today();
+    if (range <= 14 || i % 3 === (range - 1) % 3)
+      out += `<text x="${cx}" y="${H-6}" text-anchor="middle" font-size="11" fill="${isT ? 'var(--fg)' : 'var(--faint)'}" font-weight="${isT ? 700 : 400}">${range <= 7 ? x.d.toLocaleDateString('ru-RU', {weekday:'short'}) : x.d.getDate()}</text>`;
+    out += `<rect class="hit" data-i="${i}" x="${pL + cw*i}" y="${pT}" width="${cw}" height="${H-pT-pB}" fill="transparent"/>`;
+  });
+  svg.innerHTML = out;
+  const sum = totals.reduce((a, b) => a + b, 0);
+  $('barSub').textContent = `Всего ${fmtMin(sum)} · в среднем ${fmtMin(sum / range)} в день`;
+  svg.querySelectorAll('.hit').forEach(r => {
+    r.onmousemove = ev => {
+      const x = data[+r.dataset.i], tot = totals[+r.dataset.i];
+      showTip(ev, `<b>${esc(x.d.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long'}))}</b>` +
+        (tot ? x.parts.map(p => `<div><i style="background:${esc(p.s.color)}"></i>${esc(p.s.name)}: ${fmtMin(p.m)}</div>`).join('') + `<div style="margin-top:4px">Всего: <b>${fmtMin(tot)}</b></div>` : '<div>Нет занятий</div>'));
+    };
+    r.onmouseleave = hideTip;
+  });
+  $('legend').innerHTML = S.subjects.map(s => `<span><i style="background:${esc(s.color)}"></i>${esc(s.name)}</span>`).join('');
+}
+
+/* ---------- donut ---------- */
+let dRange = 7;
+$('donutSeg').onclick = e => { const b = e.target.closest('button'); if (!b) return; dRange = +b.dataset.r; [...$('donutSeg').children].forEach(x => x.classList.toggle('on', x === b)); renderDonut(); };
+function renderDonut() {
+  const from = dRange ? dkey(addDays(new Date(), -dRange + 1)) : '0000';
+  const rows = S.subjects.map(s => ({s, m: S.sessions.reduce((a, x) => a + (x.subjectId === s.id && x.date >= from ? x.dur/60 : 0), 0)}));
+  const tot = rows.reduce((a, r) => a + r.m, 0);
+  const R = 58, C = 2 * Math.PI * R; let off = 0;
+  let out = `<circle cx="75" cy="75" r="${R}" fill="none" stroke="var(--soft-2)" stroke-width="18"/>`;
+  const vis = rows.filter(r => r.m > 0);
+  vis.forEach(r => {
+    const len = C * r.m / tot, gap = vis.length > 1 ? 2 : 0;
+    out += `<circle cx="75" cy="75" r="${R}" fill="none" stroke="${esc(r.s.color)}" stroke-width="18" stroke-dasharray="${Math.max(0.5, len - gap)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)"/>`;
+    off += len;
+  });
+  out += `<text x="75" y="76" text-anchor="middle" font-size="19" font-weight="800" fill="var(--fg)">${fmtMin(tot)}</text><text x="75" y="94" text-anchor="middle" font-size="11" fill="var(--muted)">всего</text>`;
+  $('donut').innerHTML = out;
+  $('dlist').innerHTML = rows.sort((a, b) => b.m - a.m).map(r => `<div><i style="background:${esc(r.s.color)}"></i><span>${esc(r.s.name)}</span><b>${fmtMin(r.m)}${tot ? ` · ${Math.round(r.m / tot * 100)}%` : ''}</b></div>`).join('');
+}
+
+/* ---------- mood & rating ---------- */
+function renderMood() {
+  const from = dkey(addDays(new Date(), -29));
+  const recent = S.sessions.filter(x => x.date >= from);
+  const counts = MOODS.map(m => ({m, n: recent.filter(x => x.mood === m.id).length}));
+  const maxN = Math.max(1, ...counts.map(c => c.n));
+  const anyMood = counts.some(c => c.n);
+  $('moodBox').innerHTML = anyMood ? counts.map(c => `<div class="mood-row" style="--mc:${c.m.c}"><span>${c.m.e} ${c.m.label}</span><div class="bar"><i style="width:${c.n / maxN * 100}%"></i></div><b>${c.n}</b></div>`).join('')
+    : '<div class="sub">Отмечай настроение после сессии, и здесь появится картина.</div>';
+  const rated = recent.filter(x => x.rating);
+  if (!rated.length) { $('rateBox').innerHTML = '<div class="sub">Оценивай сессии от 1 до 5, чтобы видеть, какие предметы идут легче.</div>'; return; }
+  const avg = rated.reduce((a, x) => a + x.rating, 0) / rated.length;
+  const per = S.subjects.map(s => { const r = rated.filter(x => x.subjectId === s.id); return {s, n: r.length, a: r.length ? r.reduce((a, x) => a + x.rating, 0) / r.length : 0}; }).filter(p => p.n);
+  $('rateBox').innerHTML = `<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px"><span class="big-num">${avg.toFixed(1)}</span>${stars(Math.round(avg))}<span class="sub">${rated.length} оценок</span></div>
+    <div class="rate-list">${per.map(p => `<div><span>${esc(p.s.name)}</span><b>${p.a.toFixed(1)}</b></div>`).join('')}</div>`;
+}
+
+/* ---------- heatmap ---------- */
+function renderHeat() {
+  const now = new Date(), dow = (now.getDay() + 6) % 7;
+  const start = addDays(now, -(19 * 7 + dow));
+  const byDay = {}; S.sessions.forEach(x => byDay[x.date] = (byDay[x.date] || 0) + x.dur/60);
+  const maxM = Math.max(60, ...Object.values(byDay));
+  let out = '';
+  for (let i = 0; i < 140; i++) {
+    const d = addDays(start, i);
+    if (d > now) { out += '<i style="visibility:hidden"></i>'; continue; }
+    const m = byDay[dkey(d)] || 0;
+    const bg = m > 0 ? `background:color-mix(in srgb, var(--blue) ${Math.round(25 + 75 * Math.min(1, m / maxM))}%, var(--soft-2))` : '';
+    out += `<i style="${bg}" data-tip="${esc(d.toLocaleDateString('ru-RU', {day:'numeric', month:'short'}))}: ${fmtMin(m)}"></i>`;
+  }
+  $('heat').innerHTML = out;
+}
+$('heat').onmousemove = e => { const el = e.target.closest('i'); if (el && el.dataset.tip) showTip(e, esc(el.dataset.tip)); else hideTip(); };
+$('heat').onmouseleave = () => hideTip();
+
+/* ---------- history ---------- */
+let histDays = 7;
+function renderHistory() {
+  const f = $('histFilter').value;
+  const list = S.sessions.filter(x => !f || x.subjectId === f).sort((a, b) => b.date.localeCompare(a.date) || b.start - a.start);
+  const box = $('history');
+  if (!list.length) { box.innerHTML = '<div class="empty">Пока нет занятий. Запусти таймер или нажми «Добавить вручную».</div>'; return; }
+  const groups = {}; list.forEach(x => (groups[x.date] ||= []).push(x));
+  const keys = Object.keys(groups);
+  box.innerHTML = keys.slice(0, histDays).map(k => {
+    const d = new Date(k + 'T12:00'), tot = groups[k].reduce((a, x) => a + x.dur/60, 0);
+    const head = k === today() ? 'Сегодня' : d.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long'});
+    return `<div class="day"><div class="day-h"><span>${esc(head)}</span><span>${fmtMin(tot)}</span></div>` + groups[k].map(x => {
+      const s = subj(x.subjectId), m = moodOf(x.mood);
+      return `<div class="sess"><div class="glyph" style="--c:${esc(s.color)}">${esc(glyphOf(s))}</div>
+        <div class="body"><div class="t">${esc(s.name)}<small>${fmtMin(x.dur/60)}</small></div>
+          ${x.note ? `<div class="n">${esc(x.note)}</div>` : ''}
+          ${x.comment ? `<div class="c">${esc(x.comment)}</div>` : ''}
+          ${m || x.rating ? `<div class="tags">${m ? `<span class="tag">${m.e} ${m.label}</span>` : ''}${stars(x.rating)}</div>` : ''}
+        </div>
+        <div class="acts"><button class="icon-btn" data-edit="${esc(x.id)}" title="Изменить" aria-label="Изменить">✎</button><button class="icon-btn" data-del="${esc(x.id)}" title="Удалить" aria-label="Удалить">✕</button></div></div>`;
+    }).join('') + '</div>';
+  }).join('') + (keys.length > histDays ? `<div style="text-align:center"><button class="btn btn-ghost btn-sm" id="moreBtn">Показать ещё (${keys.length - histDays} дн.)</button></div>` : '');
+  box.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openSession(S.sessions.find(x => x.id === b.dataset.edit)));
+  box.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    if (!await ask('Удалить занятие?', 'Запись пропадёт на всех устройствах.', {okLabel:'Удалить', danger:true})) return;
+    S.sessions = S.sessions.filter(x => x.id !== b.dataset.del); dropSession(b.dataset.del); renderAll();
+  });
+  const more = $('moreBtn'); if (more) more.onclick = () => { histDays += 14; renderHistory(); };
+}
+$('histFilter').onchange = () => { histDays = 7; renderHistory(); };
+
+/* ---------- subjects manager ---------- */
+let newColor = PALETTE[4];
+function openManage() { renderManage(); $('subModal').classList.add('open'); setTimeout(() => $('newSubj').focus(), 50); }
+$('manageBtn').onclick = openManage;
+function renderManage() {
+  $('subList').innerHTML = S.subjects.map((s, i) => `<div class="sub-item" data-i="${i}">
+    <input type="color" value="${esc(s.color)}" aria-label="Цвет">
+    <input type="text" value="${esc(glyphOf(s))}" maxlength="3" aria-label="Значок">
+    <input type="text" value="${esc(s.name)}" aria-label="Название">
+    <button class="icon-btn" title="Удалить" aria-label="Удалить">✕</button></div>`).join('');
+  $('subList').querySelectorAll('.sub-item').forEach(row => {
+    const s = S.subjects[+row.dataset.i];
+    const [c, g, n, del] = row.children;
+    c.onchange = () => { s.color = c.value; saveSettings(); renderAll(); };
+    g.onchange = () => { s.glyph = g.value.trim() || s.name.slice(0, 1); saveSettings(); renderAll(); };
+    n.onchange = () => { if (n.value.trim()) { s.name = n.value.trim(); saveSettings(); renderAll(); } };
+    del.onclick = async () => {
+      if (S.subjects.length <= 1) { toast('Нужен хотя бы один предмет'); return; }
+      const gone = S.sessions.filter(x => x.subjectId === s.id);
+      $('subModal').classList.remove('open');
+      const ok = await ask(`Удалить «${s.name}»?`, gone.length ? `Вместе с ним удалятся ${gone.length} занятий.` : 'Занятий по этому предмету нет.', {okLabel:'Удалить', danger:true});
+      if (ok) {
+        S.subjects = S.subjects.filter(x => x !== s);
+        S.sessions = S.sessions.filter(x => x.subjectId !== s.id);
+        if (S.timer.subjectId === s.id) S.timer.subjectId = S.subjects[0].id;
+        saveSettings(); renderAll();
+        for (const x of gone) await dropSession(x.id);
+      }
+      openManage();
+    };
+  });
+  $('palette').innerHTML = PALETTE.map(c => `<button style="background:${c}" class="${c === newColor ? 'on' : ''}" data-c="${c}" aria-label="Цвет ${c}"></button>`).join('');
+}
+$('palette').onclick = e => { const b = e.target.closest('button'); if (!b) return; newColor = b.dataset.c; renderManage(); };
+function addSubject() {
+  const name = $('newSubj').value.trim(); if (!name) { $('newSubj').focus(); return; }
+  S.subjects.push({id: newId(), name, color: newColor, glyph: $('newGlyph').value.trim() || name.slice(0, 1).toUpperCase()});
+  $('newSubj').value = ''; $('newGlyph').value = '';
+  newColor = PALETTE[(PALETTE.indexOf(newColor) + 1) % PALETTE.length];
+  saveSettings(); renderManage(); renderAll(); toast(`Предмет «${name}» добавлен`);
+}
+$('addSubj').onclick = addSubject;
+$('newSubj').onkeydown = e => { if (e.key === 'Enter') addSubject(); };
+
+/* ---------- export / import ---------- */
+$('exportBtn').onclick = async () => {
+  const data = JSON.stringify({subjects: S.subjects, goal: S.goal, sessions: S.sessions}, null, 2);
+  const filename = `study-diary-${today()}.json`;
+  try {
+    const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+    if (dl) { await dl.save({filename, data}); return; }
+  } catch(e) { if (e && e.code) { toast('Скачивание отменено'); return; } }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type:'application/json'})); a.download = filename; a.click();
+};
+$('importBtn').onclick = () => $('importFile').click();
+$('importFile').onchange = async e => {
+  const file = e.target.files[0]; e.target.value = ''; if (!file) return;
+  let d; try { d = JSON.parse(await file.text()); } catch(err) { toast('Это не JSON-файл экспорта'); return; }
+  if (!Array.isArray(d.subjects) || !Array.isArray(d.sessions)) { toast('В файле нет предметов и занятий'); return; }
+  if (!await ask('Добавить данные из файла?', `Предметов: ${d.subjects.length}, занятий: ${d.sessions.length}. Совпадающие записи не задвоятся.`, {okLabel:'Импортировать'})) return;
+  d.subjects.forEach(s => { if (s && s.id && !S.subjects.some(x => x.id === s.id)) S.subjects.push({id: String(s.id), name: String(s.name || 'Предмет'), color: s.color || PALETTE[7], glyph: s.glyph}); });
+  if (d.goal > 0) S.goal = d.goal;
+  const have = new Set(S.sessions.map(x => `${x.subjectId}|${x.date}|${x.dur}|${x.start}`));
+  const add = d.sessions.filter(x => x && x.subjectId && x.date && x.dur > 0 && !have.has(`${x.subjectId}|${x.date}|${x.dur}|${x.start}`))
+    .map(x => ({id: newId(), subjectId: String(x.subjectId), date: String(x.date), start: Number(x.start) || Date.now(), dur: Number(x.dur), note: x.note || '', comment: x.comment || '', mood: x.mood || null, rating: x.rating || null}));
+  S.sessions.push(...add); saveSettings(); renderAll();
+  toast(`Импортировано занятий: ${add.length}`);
+  for (const x of add) await putSession(x);
+};
+
+/* ---------- tooltip ---------- */
+function showTip(ev, html) { const t = $('tip'); t.innerHTML = html; t.style.opacity = 1;
+  t.style.left = Math.max(8, Math.min(ev.clientX + 14, innerWidth - t.offsetWidth - 8)) + 'px'; t.style.top = (ev.clientY + 14) + 'px'; }
+function hideTip() { $('tip').style.opacity = 0; }
+
+/* ---------- boot ---------- */
+function renderAll() { renderSubjects(); renderKpis(); renderBars(); renderDonut(); renderMood(); renderHeat(); renderHistory(); tick(); }
+renderAll();
+if (S.timer.running) keepAwake(true);
+setInterval(tick, 500);
+let lastDay = today();
+setInterval(() => { if (today() !== lastDay) { lastDay = today(); renderAll(); } }, 60000);
+addEventListener('resize', () => { clearTimeout(window._rz); window._rz = setTimeout(renderBars, 120); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.timer.running) keepAwake(true); });
+connect();
+})();
+</script>
