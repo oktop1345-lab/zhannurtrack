@@ -565,8 +565,8 @@ function connect() {
   };
 
   auth.onAuthStateChanged(async u => {
-    const ownerHash = String(window.OWNER_EMAIL_SHA256 || '').toLowerCase();
-    canEdit = !!(u && u.email && u.emailVerified && ownerHash && await sha256(u.email.trim().toLowerCase()) === ownerHash);
+    const owners = [].concat(window.OWNER_EMAIL_SHA256 || []).map(h => String(h).trim().toLowerCase());
+    canEdit = !!(u && u.email && u.emailVerified && owners.includes(await sha256(u.email.trim().toLowerCase())));
     $('authBtn').textContent = u ? 'Выйти' : 'Войти';
     $('authBtn').title = u ? `Вход выполнен: ${u.email || 'без почты'}` : 'Войти через Google';
     if (u && !canEdit) toast(`Ты вошёл как ${u.email || 'аккаунт без почты'}. Редактировать может только владелец.`);
