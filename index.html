@@ -466,7 +466,7 @@ const fmtMin = m => { if (m > 0 && m < 1) return '<1м'; m = Math.round(m); cons
 const minutesOn = (date, sid) => S.sessions.reduce((a, x) => a + (x.date === date && (!sid || x.subjectId === sid) ? x.dur/60 : 0), 0);
 const stars = r => r ? `<span class="stars" title="${r} из 5">${'★'.repeat(r)}<s>${'★'.repeat(5-r)}</s></span>` : '';
 const moodOf = id => MOODS.find(m => m.id === id);
-function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), msg.length > 60 ? 6000 : 2400); }
 
 /* ---------- dialogs (native confirm/prompt are blocked in artifacts) ---------- */
 function ask(title, body, {okLabel = 'OK', danger = false, number = null} = {}) {
@@ -568,7 +568,9 @@ function connect() {
     const ownerHash = String(window.OWNER_EMAIL_SHA256 || '').toLowerCase();
     canEdit = !!(u && u.email && u.emailVerified && ownerHash && await sha256(u.email.trim().toLowerCase()) === ownerHash);
     $('authBtn').textContent = u ? 'Выйти' : 'Войти';
-    if (u && !canEdit) toast('Этот аккаунт может только смотреть.');
+    $('authBtn').title = u ? `Вход выполнен: ${u.email || 'без почты'}` : 'Войти через Google';
+    if (u && !canEdit) toast(`Ты вошёл как ${u.email || 'аккаунт без почты'}. Редактировать может только владелец.`);
+    if (u && canEdit) toast(`Ты вошёл как ${u.email}. Можно редактировать.`);
     applyEditMode(); syncLabel(); seedIfNeeded();
   });
   $('authBtn').onclick = async () => {
