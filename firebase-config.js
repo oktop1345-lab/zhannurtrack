@@ -2,12 +2,12 @@
 // а защиту данных обеспечивают правила Firestore (файл firestore.rules).
 // Firebase Console → Project settings → General → Your apps → Web app → SDK setup and configuration → Config.
 window.FIREBASE_CONFIG = {
-  apiKey: "ВСТАВЬ_СЮДА",
-  authDomain: "ВСТАВЬ_СЮДА.firebaseapp.com",
-  projectId: "ВСТАВЬ_СЮДА",
-  storageBucket: "ВСТАВЬ_СЮДА.appspot.com",
-  messagingSenderId: "ВСТАВЬ_СЮДА",
-  appId: "ВСТАВЬ_СЮДА"
+  apiKey: "AIzaSyAg4UmegLWVey7ystw0m1kPBvNvmowg2E4",
+  authDomain: "ucheba-zhannur.firebaseapp.com",
+  projectId: "ucheba-zhannur",
+  storageBucket: "ucheba-zhannur.firebasestorage.app",
+  messagingSenderId: "1084722207594",
+  appId: "1:1084722207594:web:1a77a10bf2f4b969602313"
 };
 
 // SHA-256 почты владельца: только с этой почтой на сайте появляются кнопки редактирования.
