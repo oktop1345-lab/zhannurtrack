@@ -207,6 +207,9 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
 .palette{display:flex;gap:8px;flex-wrap:wrap}
 .palette button{width:26px;height:26px;border-radius:50%;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
 .palette button.on{box-shadow:0 0 0 2px var(--fg)}
+body.ro .edit-only{display:none!important}
+body.ro .pill{pointer-events:none}
+body.ro .hero .cta::after{content:"Режим просмотра";font-size:13px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:40;pointer-events:none;max-width:calc(100% - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--on-ink);font-size:12px;padding:8px 10px;border-radius:8px;z-index:20;opacity:0;transition:opacity .1s;max-width:240px}
@@ -225,7 +228,8 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
   <div class="nav-right">
     <span class="sync" id="sync"><i></i><span>Подключение…</span></span>
     <button class="icon-btn" id="themeBtn" title="Сменить тему" aria-label="Сменить тему">◐</button>
-    <button class="btn btn-ink btn-sm" id="navAdd">+ Занятие</button>
+    <button class="btn btn-ghost btn-sm" id="authBtn">Войти</button>
+    <button class="btn btn-ink btn-sm edit-only" id="navAdd">+ Занятие</button>
   </div>
 </div></nav>
 
@@ -235,8 +239,8 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
       <h1>Учись, отмечай, смотри как растёшь.</h1>
       <p class="lead">Таймер, заметки о том, что прошёл, настроение и оценка каждой сессии. Всё синхронизируется между телефоном и компьютером.</p>
       <div class="cta">
-        <button class="btn btn-blue" id="heroStart">Начать сессию</button>
-        <button class="btn btn-ghost" id="heroManual">Добавить вручную</button>
+        <button class="btn btn-blue edit-only" id="heroStart">Начать сессию</button>
+        <button class="btn btn-ghost edit-only" id="heroManual">Добавить вручную</button>
       </div>
     </div>
     <div class="hero-art" aria-hidden="true">
@@ -284,7 +288,7 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
   <section class="block" id="subjectsSec">
     <div class="sec-head">
       <div><h2>Предметы</h2><p>Выбери, чем занимаешься, или добавь свой.</p></div>
-      <button class="btn btn-ghost btn-sm" id="manageBtn">Настроить предметы</button>
+      <button class="btn btn-ghost btn-sm edit-only" id="manageBtn">Настроить предметы</button>
     </div>
     <div class="subjects" id="subjects"></div>
   </section>
@@ -301,7 +305,7 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
         <div class="clock" id="clock">00:00:00</div>
         <div class="clock-sub"><i id="clockDot"></i><span id="clockSubj">—</span></div>
         <div class="progress"><i id="prog"></i></div>
-        <div class="tctrl">
+        <div class="tctrl edit-only">
           <button class="btn btn-blue" id="startBtn">Старт</button>
           <button class="btn btn-ink" id="finishBtn" disabled>Завершить</button>
           <button class="btn btn-ghost" id="resetBtn" disabled>Сбросить</button>
@@ -309,9 +313,9 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
       </div>
       <div class="tside">
         <div><span class="lbl">Предмет</span><div class="pills" id="pills"></div></div>
-        <div><span class="lbl">Что учишь сейчас</span><textarea id="draftNote" placeholder="Например: символы Кристоффеля, задачи 3–7"></textarea></div>
+        <div class="edit-only"><span class="lbl">Что учишь сейчас</span><textarea id="draftNote" placeholder="Например: символы Кристоффеля, задачи 3–7"></textarea></div>
         <div class="goal">
-          <div class="goal-row"><span>Цель на день: <b id="goalVal"></b></span><button class="icon-btn" id="goalBtn" title="Изменить цель" aria-label="Изменить цель">✎</button></div>
+          <div class="goal-row"><span>Цель на день: <b id="goalVal"></b></span><button class="icon-btn edit-only" id="goalBtn" title="Изменить цель" aria-label="Изменить цель">✎</button></div>
           <div class="bar"><i id="goalBar" style="width:0"></i></div>
         </div>
       </div>
@@ -350,7 +354,7 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
 
   <footer>
     <button class="btn btn-ghost btn-sm" id="exportBtn">Экспорт данных</button>
-    <button class="btn btn-ghost btn-sm" id="importBtn">Импорт</button>
+    <button class="btn btn-ghost btn-sm edit-only" id="importBtn">Импорт</button>
     <input type="file" id="importFile" accept="application/json" hidden>
   </footer>
 </main>
@@ -404,6 +408,10 @@ footer{padding-block:48px 64px;display:flex;gap:8px;flex-wrap:wrap;justify-conte
 <div class="tip" id="tip"></div>
 <div class="toast" id="toast" role="status"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 (() => {
 'use strict';
@@ -479,9 +487,12 @@ document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e =
 }));
 addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.id !== 'askModal' && m.classList.remove('open')); });
 
-/* ---------- persistence ---------- */
+/* ---------- persistence (Firebase Firestore when configured, else this browser) ---------- */
+let canEdit = true;           // false for visitors when the site is public
+let cloudEmpty = false, seeded = false;
 let writing = Promise.resolve(), queued = false;
 function saveSettings() {
+  if (!canEdit) return;
   saveLocal();
   if (mode !== 'cloud' || queued) return;
   queued = true;
@@ -492,20 +503,22 @@ function saveSettings() {
 }
 function sessionBody(x) { const {id, ...rest} = x; return rest; }
 async function putSession(x) {
+  if (!canEdit) return;
   saveLocal();
   if (mode !== 'cloud') return;
   try { await sessColl.doc(x.id).set(sessionBody(x)); } catch(err) { cloudError(err); }
 }
 async function dropSession(id) {
+  if (!canEdit) return;
   saveLocal();
   if (mode !== 'cloud') return;
   try { await sessColl.doc(id).delete(); } catch(err) { cloudError(err); }
 }
 function cloudError(err) {
   const c = err && err.code;
-  if (c === 'quota_exceeded') toast('Хранилище заполнено. Удали старые записи или сделай экспорт.');
-  else if (c === 'revoked') setSync('local', 'Только на этом устройстве');
-  else toast('Не удалось сохранить в облако. Данные остались на этом устройстве.');
+  if (c === 'permission-denied') toast('Нет прав на изменение. Войди как владелец.');
+  else if (c === 'resource-exhausted') toast('Превышен лимит Firebase на сегодня. Попробуй позже.');
+  else toast('Не удалось сохранить в облако. Проверь интернет.');
 }
 function setSync(state, text) {
   const el = $('sync');
@@ -513,46 +526,80 @@ function setSync(state, text) {
   el.querySelector('span').textContent = text;
   el.title = text;
 }
+async function sha256(t) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function applyEditMode() {
+  document.body.classList.toggle('ro', !canEdit);
+  if (!canEdit) document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+  renderAll();
+}
+function syncLabel() {
+  if (mode !== 'cloud') return;
+  setSync('cloud', canEdit ? 'Синхронизировано · ты редактируешь' : 'Только просмотр');
+}
 
-async function connect() {
-  setSync('', 'Подключение…');
-  if (!window.claude || typeof window.claude.use !== 'function') { setSync('local', 'Только на этом устройстве'); return; }
-  let db, user;
-  try { [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]); } catch(e) {}
-  const uid = user ? await user.id() : null;
-  if (!db || !uid) { setSync('local', 'Войди в claude.ai для синхронизации'); return; }
-  settingsRef = db.doc(`data/users/${uid}/settings`);
+function connect() {
+  const cfg = window.FIREBASE_CONFIG;
+  if (!cfg || !cfg.apiKey || String(cfg.apiKey).includes('ВСТАВЬ') || !window.firebase) {
+    setSync('local', 'Только на этом устройстве');
+    $('authBtn').hidden = true;
+    return;
+  }
+  firebase.initializeApp(cfg);
+  const fs = firebase.firestore(), auth = firebase.auth();
+  settingsRef = fs.doc('tracker/settings');
   sessColl = settingsRef.collection('sessions');
   mode = 'cloud';
-  setSync('warn', 'Синхронизация…');
-  let gotSettings = false, gotSessions = false, seeded = false;
+  canEdit = false; applyEditMode();
+  setSync('warn', 'Загрузка…');
+  let gotSettings = false, gotSessions = false;
   const timer = setTimeout(() => { if (!gotSettings || !gotSessions) setSync('warn', 'Нет связи, данные могут быть устаревшими'); }, 10000);
-  const settle = () => { if (gotSettings && gotSessions) { clearTimeout(timer); setSync('cloud', 'Синхронизировано'); } };
+  const settle = () => { if (gotSettings && gotSessions) { clearTimeout(timer); syncLabel(); } };
+  const seedIfNeeded = () => {
+    if (!canEdit || !cloudEmpty || seeded) return;
+    seeded = true;
+    saveSettings();                       // first owner login: store subjects
+    S.sessions.forEach(x => putSession(x)); // and anything saved in this browser before
+  };
+
+  auth.onAuthStateChanged(async u => {
+    const ownerHash = String(window.OWNER_EMAIL_SHA256 || '').toLowerCase();
+    canEdit = !!(u && u.email && u.emailVerified && ownerHash && await sha256(u.email.trim().toLowerCase()) === ownerHash);
+    $('authBtn').textContent = u ? 'Выйти' : 'Войти';
+    if (u && !canEdit) toast('Этот аккаунт может только смотреть.');
+    applyEditMode(); syncLabel(); seedIfNeeded();
+  });
+  $('authBtn').onclick = async () => {
+    try {
+      if (auth.currentUser) await auth.signOut();
+      else await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    } catch(e) {
+      if (e && e.code === 'auth/unauthorized-domain') toast('Добавь этот домен в Firebase → Authentication → Settings → Authorized domains.');
+      else if (e && e.code !== 'auth/popup-closed-by-user') toast('Не получилось войти: ' + (e.code || 'ошибка'));
+    }
+  };
 
   settingsRef.onSnapshot(snap => {
     if (!snap.exists) {
-      if (!snap.metadata.fromCache && !seeded) {
-        seeded = true;
-        gotSettings = true; settle();
-        saveSettings(); // first visit with this account: store current subjects
-        // carry over sessions that were only on this device
-        S.sessions.forEach(x => putSession(x));
-      }
+      if (!snap.metadata.fromCache) { cloudEmpty = true; gotSettings = true; settle(); seedIfNeeded(); }
       return;
     }
+    cloudEmpty = false;
     const d = snap.data();
     if (Array.isArray(d.subjects) && d.subjects.length) S.subjects = d.subjects.map(s => ({...s}));
     if (d.goal > 0) S.goal = d.goal;
     if (d.timer) S.timer = {...DEFAULT_TIMER, ...d.timer};
     if (!snap.metadata.fromCache) { gotSettings = true; settle(); }
-    saveLocal(); renderAll();
-  }, err => { clearTimeout(timer); setSync('warn', 'Синхронизация прервалась'); });
+    renderAll();
+  }, err => { clearTimeout(timer); setSync('warn', 'Не удалось загрузить данные'); });
 
   sessColl.onSnapshot(q => {
     S.sessions = q.docs.map(d => ({...d.data(), id: d.id}));
     if (!q.metadata.fromCache) { gotSessions = true; settle(); }
-    saveLocal(); renderAll();
-  }, err => { clearTimeout(timer); setSync('warn', 'Синхронизация прервалась'); });
+    renderAll();
+  }, err => { clearTimeout(timer); setSync('warn', 'Не удалось загрузить данные'); });
 }
 
 /* ---------- theme ---------- */
@@ -580,15 +627,15 @@ function renderSubjects() {
       <h3>${esc(s.name)}</h3>
       <div class="glyph">${esc(glyphOf(s))}</div>
       <div class="meta">Сегодня ${fmtMin(minutesOn(t, s.id))} · неделя ${fmtMin(week)}${last && last.note ? `<br>Последнее: ${esc(last.note.split('\n')[0].slice(0, 60))}` : ''}</div>
-      <button class="go" data-start="${esc(s.id)}">Начать сессию →</button>
+      <button class="go edit-only" data-start="${esc(s.id)}">Начать сессию →</button>
     </div>`;
-  }).join('') + `<button class="scard add" id="addCard">+ Добавить предмет</button>`;
+  }).join('') + (canEdit ? `<button class="scard add" id="addCard">+ Добавить предмет</button>` : '');
   $('subjects').querySelectorAll('[data-start]').forEach(b => b.onclick = () => {
     if (!S.timer.running && S.timer.acc < 1) { S.timer.subjectId = b.dataset.start; startTimer(); }
     else { selectSubject(b.dataset.start); }
     $('timerSec').scrollIntoView({behavior:'smooth'});
   });
-  $('addCard').onclick = openManage;
+  if ($('addCard')) $('addCard').onclick = openManage;
 
   $('pills').innerHTML = S.subjects.map(s => `<button class="pill ${S.timer.subjectId === s.id ? 'on' : ''}" style="--c:${esc(s.color)}" data-id="${esc(s.id)}"><i></i>${esc(s.name)}</button>`).join('');
   $('pills').querySelectorAll('button').forEach(b => b.onclick = () => selectSubject(b.dataset.id));
@@ -600,6 +647,7 @@ function renderSubjects() {
   hf.value = S.subjects.some(s => s.id === cur) ? cur : '';
 }
 function selectSubject(id) {
+  if (!canEdit) return;
   if (S.timer.subjectId === id) return;
   S.timer.subjectId = id; saveSettings(); renderSubjects(); tick();
 }
@@ -615,10 +663,11 @@ async function keepAwake(on) {
   } catch(e) { wakeLock = null; }
 }
 function startTimer() {
+  if (!canEdit) return;
   if (!S.subjects.some(s => s.id === S.timer.subjectId)) S.timer.subjectId = S.subjects[0].id;
   S.timer.running = true; S.timer.startedAt = Date.now(); saveSettings(); keepAwake(true); renderSubjects(); tick();
 }
-function pauseTimer() { S.timer.acc = elapsed(); S.timer.running = false; saveSettings(); keepAwake(false); tick(); }
+function pauseTimer() { if (!canEdit) return; S.timer.acc = elapsed(); S.timer.running = false; saveSettings(); keepAwake(false); tick(); }
 function tick() {
   const e = elapsed(), tg = target();
   const shown = tg ? Math.max(0, tg - e) : e;
@@ -635,7 +684,7 @@ function tick() {
   $('resetBtn').disabled = e < 1;
   document.title = S.timer.running ? `${txt} · ${s.name}` : 'Дневник учёбы';
   [...$('modes').children].forEach(b => b.classList.toggle('on', b.dataset.mode === S.timer.mode));
-  if (tg && S.timer.running && e >= tg) { pauseTimer(); beep(); toast('Время вышло. Сохрани сессию или продолжай.'); }
+  if (canEdit && tg && S.timer.running && e >= tg) { pauseTimer(); beep(); toast('Время вышло. Сохрани сессию или продолжай.'); }
 }
 function beep() {
   try {
@@ -670,6 +719,7 @@ function paintPickers() {
   $('eRateWord').textContent = RATE_WORDS[eRate] || '';
 }
 function openSession(x, timerFinish = false) {
+  if (!canEdit) return;
   editing = x; fromTimer = timerFinish;
   const dur = x ? x.dur : (timerFinish ? Math.round(elapsed()) : 1800);
   const mins = Math.max(timerFinish ? 0 : 1, Math.round(dur / 60));
@@ -851,7 +901,7 @@ function renderHistory() {
           ${x.comment ? `<div class="c">${esc(x.comment)}</div>` : ''}
           ${m || x.rating ? `<div class="tags">${m ? `<span class="tag">${m.e} ${m.label}</span>` : ''}${stars(x.rating)}</div>` : ''}
         </div>
-        <div class="acts"><button class="icon-btn" data-edit="${esc(x.id)}" title="Изменить" aria-label="Изменить">✎</button><button class="icon-btn" data-del="${esc(x.id)}" title="Удалить" aria-label="Удалить">✕</button></div></div>`;
+        <div class="acts edit-only"><button class="icon-btn" data-edit="${esc(x.id)}" title="Изменить" aria-label="Изменить">✎</button><button class="icon-btn" data-del="${esc(x.id)}" title="Удалить" aria-label="Удалить">✕</button></div></div>`;
     }).join('') + '</div>';
   }).join('') + (keys.length > histDays ? `<div style="text-align:center"><button class="btn btn-ghost btn-sm" id="moreBtn">Показать ещё (${keys.length - histDays} дн.)</button></div>` : '');
   box.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openSession(S.sessions.find(x => x.id === b.dataset.edit)));
@@ -865,7 +915,7 @@ $('histFilter').onchange = () => { histDays = 7; renderHistory(); };
 
 /* ---------- subjects manager ---------- */
 let newColor = PALETTE[4];
-function openManage() { renderManage(); $('subModal').classList.add('open'); setTimeout(() => $('newSubj').focus(), 50); }
+function openManage() { if (!canEdit) return; renderManage(); $('subModal').classList.add('open'); setTimeout(() => $('newSubj').focus(), 50); }
 $('manageBtn').onclick = openManage;
 function renderManage() {
   $('subList').innerHTML = S.subjects.map((s, i) => `<div class="sub-item" data-i="${i}">
