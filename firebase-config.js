@@ -15,5 +15,6 @@ window.FIREBASE_CONFIG = {
 // Посчитать хэш: printf 'почта@gmail.com' | sha256sum  (почта маленькими буквами)
 // Не забудь добавить ту же почту в правила Firestore (firestore.rules).
 window.OWNER_EMAIL_SHA256 = [
-  "896fa901c6bd1bc651ac249574d0e9b7835fd4aa2044c0963af007ebde1a2a92"
+  "896fa901c6bd1bc651ac249574d0e9b7835fd4aa2044c0963af007ebde1a2a92",
+  "88949eb938a4b52e37cf81192f085bfadcba92dd4e9e8f2420ed3377f38af6a2"
 ];
